@@ -2,10 +2,11 @@ Set argv = WScript.Arguments
 userpass = argv(0)
 ipport = argv(1)
 address = argv(2)
+amount = argv(3)
 
 Dim passphrase
-If argv.Count = 4 Then
-  passphrase = argv(3)
+If argv.Count = 5 Then
+  passphrase = argv(4)
 Else
   passphrase = ""
 End If
@@ -15,7 +16,9 @@ curl = strScriptPath & "curl.exe"
 tmpFilename = strScriptPath & "tmp.txt"
 
 CheckAddressValidity(address)
-amount = GetAmount()
+If amount = 0 Then
+  amount = GetAmount()
+End If
 params = "[""""""" & address & """""""," & amount & "]"
 jsonStr = SendCommand("sendtoaddress", params)
 errMsg = GetErrorMsg(jsonStr)
