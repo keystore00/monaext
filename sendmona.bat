@@ -8,6 +8,11 @@ if "%2"=="" (
 ) else (
   set amount=%2
 )
+if "%passphrase%"=="" (
+  set passphrase=
+) else (
+  set passphrase="%passphrase%"
+)
 call "%basedir%\params.bat"
 if exist "%systemroot%\syswow64\" (
   C:\Windows\SysWOW64\cscript.exe "%basedir%\exec.vbs" %rpcuser%:%rpcpassword% %rpcallowip%:%rpcport% %sendto% %amount% %passphrase%

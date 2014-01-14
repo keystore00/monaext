@@ -19,21 +19,21 @@ CheckAddressValidity(address)
 If amount = 0 Then
   amount = GetAmount()
 End If
-params = "[""""""" & address & """""""," & amount & "]"
-jsonStr = SendCommand("sendtoaddress", params)
+params = "[\""" & address & "\""," & amount & "]"
+jsonStr = SendCommand("\""sendtoaddress\""", params)
 errMsg = GetErrorMsg(jsonStr)
 If IsError(errMsg) Then
   'maybe passphrase error
   'send passphrase
   passphrase = GetPassphrase()
-  new_params = "[""""""" & passphrase & """""""," & 1 & "]"
-  jsonStr = SendCommand("walletpassphrase", new_params)
+  new_params = "[\""" & passphrase & "\"",1]"
+  jsonStr = SendCommand("\""walletpassphrase\""", new_params)
   errMsg = GetErrorMsg(jsonStr)
   If IsError(errMsg) Then
     MsgBox errMsg, vbCritical, "Error"
     WScript.Quit
   End If
-  jsonStr = SendCommand("sendtoaddress", params)
+  jsonStr = SendCommand("\""sendtoaddress\""", params)
   errMsg = GetErrorMsg(jsonStr)
   If IsError(errMsg) Then
     MsgBox errMsg, vbCritical, "Error"
@@ -71,9 +71,10 @@ Function ReadOneLine(filename)
 End Function
 
 Function SendCommand(strMethod, strParams)
-  prefix = " --data-binary ""{""""jsonrpc"""""":""""""1.0"""""",""""""method"""""":"""""""
-  infix = """"""",""""""params"""""":"
-  suffix = "} -H ""content-type: text/plain;"" "
+  hoge = "\""hoge\"""
+  prefix = " --data-binary " & """{\""jsonrpc\"":\""1.0\"",\""method\"":"
+  infix = ",\""params\"":"
+  suffix = "}"" -H ""content-type: text/plain;"" "
   command = curl & " -o """  & tmpFilename & """ -u " & userpass & prefix & strMethod & infix & strParams & suffix & ipport
   Set WshShell = CreateObject("WScript.Shell")
   Set outExec = WshShell.Exec(command)
