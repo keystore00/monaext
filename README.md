@@ -14,7 +14,7 @@ Jane Style、JaneXenoでの動作確認済み。
 
 0. 2chブラウザにて`ツール->設定->機能->コマンド`
 0. "コマンド名"に好きな名前を、"実行するコマンド"に次を入力
-`"$BASEPATH\monaext\sendmona.bat" $TEXT`
+`"$BASEPATH\monaext\SendTo.bat" $TEXT`
 0. 終了
 
 使い方
@@ -27,9 +27,11 @@ Jane Style、JaneXenoでの動作確認済み。
 追加
 ---------------
 - コマンド追加時に
-`"$BASEPATH\monaext\sendmona.bat" $TEXT 5`
+`"$BASEPATH\monaext\SendTo.bat" $TEXT 5`
 のように指定することで、あらかじめ送金額を決めておくことも可能。
 - param.batでのpassphraseの入力は任意。入力した場合、送金時のpassphraseの入力を省ける。
+- FindAddress.batで送金者のアドレスがわかる。
+- うまく送金者のアドレスが表示されないときは、設定ファイルに`txindex=1`を追加して再起動
 
 ---
 寄付MONA：MQY1eFCC2Mxa3sRyME5mNFUWc4wyWxJjtx

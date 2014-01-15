@@ -1,63 +1,38 @@
-Set argv = WScript.Arguments
-rpcuser = argv(0)
-rpcpass = argv(1)
-ipport = argv(2)
-address = argv(3)
-amount = argv(4)
+Function JsonArrayAt(jsonArray, index)
+  i = 0
+  For Each elm In jsonArray
+    If i = index Then
+      Set JsonArrayAt = elm
+      Exit For
+    End If
+    i = i+1
+  Next
+End Function
 
-Dim passphrase
-If argv.Count = 6 Then
-  passphrase = argv(5)
-Else
-  passphrase = ""
-End If
-
-CheckAddressValidity(address)
-If amount = 0 Then
-  amount = GetAmount()
-End If
-
-params = "[""" & address & """," & amount & "]"
-jsonStr = SendCommand("sendtoaddress", params)
-errMsg = GetErrorMsg(jsonStr)
-If IsError(errMsg) Then
-  'maybe passphrase error
-  'send passphrase
-  passphrase = GetPassphrase()
-  new_params = "[""" & passphrase & """,1]"
-  jsonStr = SendCommand("walletpassphrase", new_params)
-  errMsg = GetErrorMsg(jsonStr)
-  If IsError(errMsg) Then
-    MsgBox errMsg, vbCritical, "Error"
-    WScript.Quit
-  End If
-  jsonStr = SendCommand("sendtoaddress", params)
-  errMsg = GetErrorMsg(jsonStr)
-  If IsError(errMsg) Then
-    MsgBox errMsg, vbCritical, "Error"
-  End If
-End If
+Function JsonArrayAtAsNonObj(jsonArray, index)
+  i = 0
+  For Each elm In jsonArray
+    If i = index Then
+      JsonArrayAtAsNonObj = elm
+      Exit For
+    End If
+    i = i+1
+  Next
+End Function
 
 Function IsError(errMsg)
   IsError = Len(errMsg) <> 0
 End Function
-Function GetErrorMsg(jsonStr)
+
+Function ParseJson(jsonStr)
   Set objSC = CreateObject("ScriptControl")
   objSC.Language = "JScript"
   objSC.AddCode "function jsonParse(s) { return eval('(' + s + ')'); }"
-  Set jsonObj = objSC.CodeObject.jsonParse(jsonStr)
-  If IsObject(jsonObj.error) then
-    GetErrorMsg = jsonObj.error.message
-  Else
-    GetErrorMsg = ""
-  End If
+  Set ParseJson = objSC.CodeObject.jsonParse(jsonStr)
 End Function
 
 Function GetResult(jsonStr)
-  Set objSC = CreateObject("ScriptControl")
-  objSC.Language = "JScript"
-  objSC.AddCode "function jsonParse(s) { return eval('(' + s + ')'); }"
-  Set jsonObj = objSC.CodeObject.jsonParse(jsonStr)
+  Set jsonObj = ParseJson(jsonStr)
   GetResult = jsonObj.result
 End Function
 
@@ -72,7 +47,7 @@ Sub CheckAddressValidity(address)
   End If
 End Sub
 
-Function GetAmount()
+Function InputAmount()
   jsonStr = SendCommand("getbalance","[]")
   balance = GetResult(jsonStr)
   strAmount = InputBox(balance & " MONA available","Input amount","1")
@@ -118,4 +93,17 @@ Function SendCommand(strMethod, strParams)
   End If
   SendCommand = oWinHttpReq.ResponseText
   On Error Goto 0
+End Function
+
+Function IsError(errMsg)
+  IsError = Len(errMsg) <> 0
+End Function
+
+Function GetErrorMsg(jsonStr)
+  Set jsonObj = ParseJson(jsonStr)
+  If IsObject(jsonObj.error) then
+    GetErrorMsg = jsonObj.error.message
+  Else
+    GetErrorMsg = ""
+  End If
 End Function
