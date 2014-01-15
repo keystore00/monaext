@@ -1,12 +1,13 @@
 Set argv = WScript.Arguments
-userpass = argv(0)
-ipport = argv(1)
-address = argv(2)
-amount = argv(3)
+rpcuser = argv(0)
+rpcpass = argv(1)
+ipport = argv(2)
+address = argv(3)
+amount = argv(4)
 
 Dim passphrase
-If argv.Count = 5 Then
-  passphrase = argv(4)
+If argv.Count = 6 Then
+  passphrase = argv(5)
 Else
   passphrase = ""
 End If
@@ -19,21 +20,22 @@ CheckAddressValidity(address)
 If amount = 0 Then
   amount = GetAmount()
 End If
-params = "[\""" & address & "\""," & amount & "]"
-jsonStr = SendCommand("\""sendtoaddress\""", params)
+
+params = "[""" & address & """," & amount & "]"
+jsonStr = SendCommand("sendtoaddress", params)
 errMsg = GetErrorMsg(jsonStr)
 If IsError(errMsg) Then
   'maybe passphrase error
   'send passphrase
   passphrase = GetPassphrase()
-  new_params = "[\""" & passphrase & "\"",1]"
-  jsonStr = SendCommand("\""walletpassphrase\""", new_params)
+  new_params = "[""" & passphrase & """,1]"
+  jsonStr = SendCommand("walletpassphrase", new_params)
   errMsg = GetErrorMsg(jsonStr)
   If IsError(errMsg) Then
     MsgBox errMsg, vbCritical, "Error"
     WScript.Quit
   End If
-  jsonStr = SendCommand("\""sendtoaddress\""", params)
+  jsonStr = SendCommand("sendtoaddress", params)
   errMsg = GetErrorMsg(jsonStr)
   If IsError(errMsg) Then
     MsgBox errMsg, vbCritical, "Error"
@@ -68,25 +70,6 @@ Function ReadOneLine(filename)
   Set objTextStream = objFileSys.OpenTextFile(filename, 1)
   ReadOneLine = objTextStream.ReadLine
   objTextStream.Close
-End Function
-
-Function SendCommand(strMethod, strParams)
-  hoge = "\""hoge\"""
-  prefix = " --data-binary " & """{\""jsonrpc\"":\""1.0\"",\""method\"":"
-  infix = ",\""params\"":"
-  suffix = "}"" -H ""content-type: text/plain;"" "
-  command = curl & " -o """  & tmpFilename & """ -u " & userpass & prefix & strMethod & infix & strParams & suffix & ipport
-  Set WshShell = CreateObject("WScript.Shell")
-  Set outExec = WshShell.Exec(command)
-  Do While outExec.Status = 0
-       WScript.Sleep 100
-  Loop
-  If outExec.ExitCode <> 0 Then
-    MsgBox "Monacoin is not running", vbCritical, "Error"
-    WScript.Quit
-  End If
-  SendCommand = ReadOneLine(tmpFilename)
-  DeleteFile(tmpFilename)
 End Function
 
 Sub DeleteFile(filename)
@@ -132,4 +115,22 @@ Function GetPassphrase()
       GetPassphrase = input
     End If
   End If
+End Function
+
+Function SendCommand(strMethod, strParams)
+  Set oWinHttpReq = CreateObject("WinHttp.WinHttpRequest.5.1")
+  URL = "http://" & ipport
+
+  strJson = "{""method"":""" & strMethod & """,""params"":" & strParams & "}:"
+  On Error Resume Next
+  oWinHttpReq.Open "POST", URL, false
+  oWinHttpReq.SetCredentials rpcuser,rpcpass,0
+  oWinHttpReq.SetRequestHeader "Content-Type", "application/json-rpc"
+  oWinHttpReq.Send(strJson)
+  If Err.Number <> 0 Then
+    MsgBox "Monacoin is not running", vbCritical, "Error"
+    WScript.Quit
+  End If
+  SendCommand = oWinHttpReq.ResponseText
+  On Error Goto 0
 End Function

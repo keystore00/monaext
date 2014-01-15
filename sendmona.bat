@@ -14,9 +14,11 @@ if "%passphrase%"=="" (
   set passphrase="%passphrase%"
 )
 call "%basedir%\params.bat"
-if exist "%systemroot%\syswow64\" (
-  C:\Windows\SysWOW64\cscript.exe "%basedir%\exec.vbs" %rpcuser%:%rpcpassword% %rpcallowip%:%rpcport% %sendto% %amount% %passphrase%
+if exist "%systemroot%\syswow64" (
+  set cscript=%systemroot%\syswow64\cscript.exe
 ) else (
-  cscript "%basedir%\exec.vbs" %rpcuser%:%rpcpassword% %rpcallowip%:%rpcport% %sendto% %amount% %passphrase%
+  set cscript=cscript
 )
+
+%cscript% "%basedir%\exec.vbs" %rpcuser% %rpcpassword% %rpcallowip%:%rpcport% %sendto% %amount% %passphrase%
 endlocal
