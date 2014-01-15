@@ -13,8 +13,6 @@ Else
 End If
 
 strScriptPath = Replace(WScript.ScriptFullName,WScript.ScriptName,"")
-curl = strScriptPath & "curl.exe"
-tmpFilename = strScriptPath & "tmp.txt"
 
 CheckAddressValidity(address)
 If amount = 0 Then
@@ -89,7 +87,9 @@ Sub CheckAddressValidity(address)
 End Sub
 
 Function GetAmount()
-  strAmount = InputBox("Amount","Input amount","1")
+  jsonStr = SendCommand("getbalance","[]")
+  balance = GetResult(jsonStr)
+  strAmount = InputBox(balance & " MONA available","Input amount","1")
   If Len(strAmount) = 0 Then
     'cancel
     WScript.Quit
