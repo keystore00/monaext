@@ -12,8 +12,6 @@ Else
   passphrase = ""
 End If
 
-strScriptPath = Replace(WScript.ScriptFullName,WScript.ScriptName,"")
-
 CheckAddressValidity(address)
 If amount = 0 Then
   amount = GetAmount()
@@ -63,18 +61,6 @@ Function GetResult(jsonStr)
   GetResult = jsonObj.result
 End Function
 
-Function ReadOneLine(filename)
-  Set objFileSys = CreateObject("Scripting.FileSystemObject")
-  Set objTextStream = objFileSys.OpenTextFile(filename, 1)
-  ReadOneLine = objTextStream.ReadLine
-  objTextStream.Close
-End Function
-
-Sub DeleteFile(filename)
-  Set objFileSys = CreateObject("Scripting.FileSystemObject")
-  objFileSys.DeleteFile filename, True
-End Sub
-
 Sub CheckAddressValidity(address)
   If Len(address) <> 34 Then
     MsgBox "Invalid length Monacoin address: " & address, vbCritical, "Error"
@@ -120,7 +106,6 @@ End Function
 Function SendCommand(strMethod, strParams)
   Set oWinHttpReq = CreateObject("WinHttp.WinHttpRequest.5.1")
   URL = "http://" & ipport
-
   strJson = "{""method"":""" & strMethod & """,""params"":" & strParams & "}:"
   On Error Resume Next
   oWinHttpReq.Open "POST", URL, false
