@@ -60,7 +60,7 @@ Function InputAmount()
     MsgBox "Invalid input: " & strAmount, vbCritical, "Error"
     WScript.Quit
   End If
-  GetAmount = amount
+  InputAmount = amount
 End Function
 
 Function GetPassphrase()
