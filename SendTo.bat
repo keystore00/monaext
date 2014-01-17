@@ -3,6 +3,7 @@
 setlocal
 set basedir=%~dp0
 set address=%1
+call "%basedir%\params.bat"
 call "%basedir%\prepare.bat"
 
 if "%2"=="" (
