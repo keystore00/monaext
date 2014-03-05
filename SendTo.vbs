@@ -12,17 +12,15 @@ Else
   passphrase = ""
 End If
 
-CheckAddressValidity(address)
-If amount = 0 Then
-  amount = InputAmount()
-End If
-
 params = "[""" & address & """," & amount & "]"
 jsonStr = SendCommand("sendtoaddress", params)
-errMsg = GetErrorMsg(jsonStr)
-If IsError(errMsg) Then
-  'maybe passphrase error
-  'send passphrase
+errCode = GetErrorCode(jsonStr)
+If errCode = RPC_NON_ERROR Then
+  WScript.Quit
+End If
+'Handle error
+If errCode = RPC_WALLET_UNLOCK_NEEDED Then
+  'passphrase error
   passphrase = GetPassphrase()
   new_params = "[""" & passphrase & """,1]"
   jsonStr = SendCommand("walletpassphrase", new_params)
@@ -36,4 +34,8 @@ If IsError(errMsg) Then
   If IsError(errMsg) Then
     MsgBox errMsg, vbCritical, "Error"
   End If
+Else
+  errMsg = GetErrorMsg(jsonStr)
+  MsgBox errMsg, vbCritical, "Error"
+  WScript.Quit
 End If
