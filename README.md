@@ -23,14 +23,12 @@ Jane Style、JaneXenoでの動作確認済み。
 0. パスフレーズを聞かれた場合は、パスフレーズを入力
 0. 終了
 
-追加
+Tips
 ---------------
 - コマンド追加時に
 `"$BASEPATH\monaext\SendTo.bat" $TEXT 5`
 のように指定することで、あらかじめ送金額を決めておくことも可能。
 - param.batでのpassphraseの入力は任意。入力した場合、送金時のpassphraseの入力を省ける。
-- FindAddress.batで送金者のアドレスがわかる。
-- うまく送金者のアドレスが表示されないときは、設定ファイルに`txindex=1`を追加して再起動
 
 
 SendMulti 複数のアドレスに一括送信
@@ -52,6 +50,15 @@ ResetList="$BASEPATH\monaext\ResetList.bat"
 0. SendMultiで送信（この際アドレスの重複は無視されます）
 0. ResetListでリストをリセット
 0. 終了
+
+Tips
+---------------
+- `SendMulti.bat list.txt`で任意のテキストファイルからの入力が可能
+
+FindAddress.bat　送金者のアドレスを表示
+===============
+- FindAddress.batを起動し、送金者のアドレスを表示したい取引IDを入力
+- うまく送金者のアドレスが表示されないときは、設定ファイルに`txindex=1`を追加してクライアント再起動
 
 ---
 Copyright (c) 2014 keystore00  
