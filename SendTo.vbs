@@ -12,6 +12,10 @@ Else
   passphrase = ""
 End If
 
+If amount = 0 Then
+  amount = InputAmount()
+End If
+
 params = "[""" & address & """," & amount & "]"
 jsonStr = SendCommand("sendtoaddress", params)
 errCode = GetErrorCode(jsonStr)
